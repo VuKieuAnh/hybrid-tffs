@@ -1,0 +1,79 @@
+# Ignore Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyo
+
+# Ignore virtual environment
+venv/
+.env/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ignore PyCharm project files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+.DS_Store
+
+# Ignore compiled C extensions
+*.so
+
+# Ignore database and data files
+*.sqlite3
+*.db
+*.h5
+*.npz
+*.csv
+*.tsv
+*.json
+*.xlsx
+
+# Ignore model weights and ML files
+*.pkl
+*.joblib
+*.pb
+*.hdf5
+*.onnx
+
+# Ignore large media files
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.mp3
+*.wav
+
+# Ignore sensitive environment files
+.env
+*.key
+*.pem
+*.crt
+secrets.json
+
+# Ignore cache directories
+.cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+
+# Ignore Git Large File Storage (LFS) tracked files
+.gitattributes
+
+# Ignore output folders (build, dist, egg)
+__output__/
+build/
+dist/
+*.egg-info/
