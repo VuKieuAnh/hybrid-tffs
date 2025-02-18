@@ -5,7 +5,7 @@ from tffs import get_frequency_of_feature_by_percent
 from mlxtend.feature_selection import SequentialFeatureSelector as SFS
 
 
-file_name="Brain.csv"
+file_name= "../Brain.csv"
 file_path=file_name
 data = df = pd.read_csv(file_path)
 
@@ -20,10 +20,8 @@ def get_features_by_forward_and_tffs(data, percent_tffs, number_run, n_estimator
 
     X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.2, random_state=42)
 
-    # 4. Khởi tạo mô hình Random Forest
     lr = LogisticRegression(max_iter=500, random_state=42)
 
-    # 5. Thiết lập Sequential Feature Selector (Forward Selection)
     sfs = SFS(
         lr,
         k_features=num_selected_features,  # Số lượng đặc trưng muốn chọn

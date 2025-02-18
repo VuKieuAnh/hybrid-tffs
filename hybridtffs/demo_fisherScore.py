@@ -3,7 +3,7 @@ import pandas as pd
 from tffs import get_frequency_of_feature_by_percent
 from sklearn.feature_selection import mutual_info_classif
 
-file_name="Brain.csv"
+file_name= "../Brain.csv"
 file_path=file_name
 data = df = pd.read_csv(file_path)
 

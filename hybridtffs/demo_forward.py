@@ -5,7 +5,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from tffs import get_frequency_of_feature_by_percent
 
-file_name="Brain.csv"
+file_name= "../Brain.csv"
 file_path=file_name
 data = df = pd.read_csv(file_path)
 
