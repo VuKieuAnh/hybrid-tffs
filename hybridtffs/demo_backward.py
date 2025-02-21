@@ -9,14 +9,14 @@ file_name= "../Brain.csv"
 file_path=file_name
 data = df = pd.read_csv(file_path)
 
-def get_features_by_backward_and_tffs(data, percent_tffs, number_run, n_estimators, percent_forward):
+def get_features_by_backward_and_tffs(data, percent_tffs, number_run, n_estimators, percent_backward):
     index_TFFS_percent = get_frequency_of_feature_by_percent(df, number_run, percent_tffs, n_estimators)
     X = data.iloc[:, 1:]
     X_original = data.iloc[:, 1:]
     y = data.iloc[:, 0]
     X_new = X_original.iloc[:, index_TFFS_percent]
     total_features = data.shape[1] - 1
-    num_selected_features = max(1, round(percent_forward * total_features / 100))  # Lấy 1% số lượng cột, tối thiểu 1 cột
+    num_selected_features = max(1, round(percent_backward * total_features / 100))  # Lấy 1% số lượng cột, tối thiểu 1 cột
 
     X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.2, random_state=42)
 
