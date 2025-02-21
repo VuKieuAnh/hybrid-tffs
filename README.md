@@ -30,7 +30,7 @@ The function returns a list of the most important features after applying both t
 ## Example Usage
 ```python
 import pandas as pd
-from feature_selection_module import get_features_by_backward_and_tffs
+from hybridtffs import get_features_by_backward_and_tffs
 
 # Create a sample DataFrame
 data = pd.DataFrame({
