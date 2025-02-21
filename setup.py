@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="hybridtffs",  # Tên package trên PyPI
-    version="0.0.2",  # Phiên bản đầu tiên
+    version="0.1.0",  # Phiên bản đầu tiên
     author="kieuanh",
     author_email="vukieuanh.hnue@gmail.com",
     description="Mo ta ngan",
