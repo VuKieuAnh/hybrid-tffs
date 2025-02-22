@@ -25,7 +25,8 @@ def get_features_by_backward_and_tffs(data, percent_tffs, number_run, n_estimato
     num_selected_features = max(1, round(percent_forward * total_features / 100))  # Lấy 1% số lượng cột, tối thiểu 1 cột
 
     X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.2, random_state=42)
-
+    class_counts = data.iloc[:, 0].value_counts()
+    min1 = min(class_counts)
     lr = LogisticRegression(max_iter=500, random_state=42)
 
     sfs = SFS(
@@ -35,7 +36,7 @@ def get_features_by_backward_and_tffs(data, percent_tffs, number_run, n_estimato
         floating=False,  # Không sử dụng SFFS (Sequential Forward Floating Selection)
         verbose=2,
         scoring='accuracy',  # Đánh giá bằng accuracy
-        cv=5,  # Sử dụng cross-validation
+        cv=min1,  # Sử dụng cross-validation
         n_jobs=-1  # Dùng tất cả CPU để tăng tốc
     )
 
@@ -85,33 +86,28 @@ def get_features_by_forward_and_tffs(data, percent_tffs, number_run, n_estimator
     total_features = data.shape[1] - 1
     num_selected_features = max(1, round(percent_forward * total_features / 100))  # Lấy 1% số lượng cột, tối thiểu 1 cột
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.2, random_state=42)
+    class_counts = data.iloc[:, 0].value_counts()
+    min1 = min(class_counts)
+    lr = LogisticRegression(max_iter=500, random_state=42)
+    # max = data.shape[0]
+    # print(max)
+    sfs = SFS(
+        lr,
+        k_features=num_selected_features,  # Số lượng đặc trưng muốn chọn
+        forward=True,  # Chọn forward selection
+        floating=False,  # Không sử dụng SFFS (Sequential Forward Floating Selection)
+        verbose=2,
+        scoring='accuracy',  # Đánh giá bằng accuracy
+        cv=min1,  # Sử dụng cross-validation
+        n_jobs=-1  # Dùng tất cả CPU để tăng tốc
+    )
 
-    # Danh sách đặc trưng
-    remaining_features = list(X.columns)  # Đặc trưng chưa được chọn
-    selected_features = []  # Đặc trưng đã chọn
+    # 6. Huấn luyện bộ chọn đặc trưng
+    sfs.fit(X_train, y_train)
 
-    # Vòng lặp để chọn đúng số lượng đặc trưng mong muốn
-    for _ in range(num_selected_features):
-        scores = []  # Lưu điểm của từng đặc trưng khi thử thêm vào
-        for feature in remaining_features:
-            # Thử thêm từng đặc trưng vào danh sách đã chọn
-            current_features = selected_features + [feature]
-            model = LinearRegression()
-            model.fit(X_train[current_features], y_train)
-            y_pred = model.predict(X_test[current_features])
-            score = mean_squared_error(y_test, y_pred)
-            scores.append((feature, score))
-
-        # Chọn đặc trưng có lỗi thấp nhất
-        scores.sort(key=lambda x: x[1])  # Sắp xếp theo MSE tăng dần
-        best_feature = scores[0][0]
-
-        # Thêm đặc trưng vào danh sách đã chọn và loại bỏ khỏi danh sách còn lại
-        selected_features.append(best_feature)
-        remaining_features.remove(best_feature)
-
-        # print(f"Chọn đặc trưng: {best_feature}, MSE: {scores[0][1]}")
+    # 7. Lấy danh sách các đặc trưng được chọn
+    selected_features = list(sfs.k_feature_names_)
 
     return selected_features
 
@@ -156,38 +152,6 @@ def get_features_by_pc_and_tffs(data, percent_tffs, number_run, n_estimators, pe
     selected_features = correlation_df['Feature'].head(num_selected_features).tolist()
     return selected_features
 
-def get_features_by_forward_and_tffs(data, percent_tffs, number_run, n_estimators, percent_forward):
-    index_TFFS_percent = get_frequency_of_feature_by_percent(data, number_run, percent_tffs, n_estimators)
-    X = data.iloc[:, 1:]
-    X_original = data.iloc[:, 1:]
-    y = data.iloc[:, 0]
-    X_new = X_original.iloc[:, index_TFFS_percent]
-    total_features = data.shape[1] - 1
-    num_selected_features = max(1, round(percent_forward * total_features / 100))  # Lấy 1% số lượng cột, tối thiểu 1 cột
-
-    X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.2, random_state=42)
-
-    lr = LogisticRegression(max_iter=500, random_state=42)
-
-    sfs = SFS(
-        lr,
-        k_features=num_selected_features,  # Số lượng đặc trưng muốn chọn
-        forward=True,  # Chọn forward selection
-        floating=False,  # Không sử dụng SFFS (Sequential Forward Floating Selection)
-        verbose=2,
-        scoring='accuracy',  # Đánh giá bằng accuracy
-        cv=5,  # Sử dụng cross-validation
-        n_jobs=-1  # Dùng tất cả CPU để tăng tốc
-    )
-
-    # 6. Huấn luyện bộ chọn đặc trưng
-    sfs.fit(X_train, y_train)
-
-    # 7. Lấy danh sách các đặc trưng được chọn
-    selected_features = list(sfs.k_feature_names_)
-
-    return selected_features
-
 def get_features_by_lasso_and_tffs(data, percent_tffs, number_run, n_estimators, percent_forward):
     index_TFFS_percent = get_frequency_of_feature_by_percent(data, number_run, percent_tffs, n_estimators)
     X = data.iloc[:, 1:]
@@ -209,7 +173,9 @@ def get_features_by_lasso_and_tffs(data, percent_tffs, number_run, n_estimators,
     max_iter = 100  # Số lần thử để điều chỉnh alpha
 
     # Tìm alpha tốt nhất bằng LassoCV
-    lasso_cv = LassoCV(cv=5, random_state=42)
+    class_counts = data.iloc[:, 0].value_counts()
+    min1 = min(class_counts)
+    lasso_cv = LassoCV(cv=min1, random_state=42)
     lasso_cv.fit(X_train, y_train)
     best_alpha = lasso_cv.alpha_  # Giá trị alpha ban đầu từ LassoCV
 
@@ -231,9 +197,8 @@ def get_features_by_lasso_and_tffs(data, percent_tffs, number_run, n_estimators,
     selected_features_name = [feature_names[i] for i in selected_features if i < len(feature_names)]
     return selected_features_name
 
-
 def get_features_by_recusive_and_tffs(data, percent_tffs, number_run, n_estimators, percent_recusive):
-    index_TFFS_percent = get_frequency_of_feature_by_percent(df, number_run, percent_tffs, n_estimators)
+    index_TFFS_percent = get_frequency_of_feature_by_percent(data, number_run, percent_tffs, n_estimators)
     X = data.iloc[:, 1:]
     X_original = data.iloc[:, 1:]
     y = data.iloc[:, 0]
